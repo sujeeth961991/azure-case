@@ -18,10 +18,6 @@ provider "azurerm" {
   features {}
 }
 
-provider "azuread" {
-
-}
-
 data "azurerm_resource_group" "delphi" {
   name = "delphi"
 }
