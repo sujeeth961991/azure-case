@@ -26,10 +26,6 @@ steps:
     command: 'plan'
     workingDirectory: '$(System.DefaultWorkingDirectory)/delphi'
     environmentServiceNameAzureRM: 'Azure subscription 1(14ab4a7a-454d-4c1c-a9d3-eaf6bc4511d8)'
-- task: ManualIntervention@8
-  inputs:
-    instructions: 'Do you want to continue with apply?'
-    emailRecipients: 'sujeethkumar.psg@gmail.com'
 - task: TerraformTaskV1@0
   inputs:
     provider: 'azurerm'
