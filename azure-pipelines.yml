@@ -25,4 +25,10 @@ steps:
     provider: 'azurerm'
     command: 'plan'
     workingDirectory: '$(System.DefaultWorkingDirectory)/delphi'
-    environmentServiceNameAzureRM: 'Azure subscription 1(1)(14ab4a7a-454d-4c1c-a9d3-eaf6bc4511d8)'
+    environmentServiceNameAzureRM: 'Azure subscription 1(14ab4a7a-454d-4c1c-a9d3-eaf6bc4511d8)'
+- task: TerraformTaskV1@0
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/delphi'
+    environmentServiceNameAzureRM: 'Azure subscription 1(14ab4a7a-454d-4c1c-a9d3-eaf6bc4511d8)'
