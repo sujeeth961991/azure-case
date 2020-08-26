@@ -28,11 +28,6 @@ variable "vnet_subnet_id" {
   type        = string
 }
 
-variable "aad_group_name" {
-  description = "Name of the Azure AD group for cluster-admin access"
-  type        = string
-}
-
 variable "api_auth_ips" {
   description = "Whitelist of IP addresses that are allowed to access the AKS Master Control Plane API"
   type        = list(string)
@@ -71,4 +66,9 @@ variable "addons" {
 variable "tags" {
   description = "Tags to add to AKS"
   type        = map(string)
+}
+
+variable "admin_group_object_ids" {
+  description = "AD Group Object ID for cluster admin"
+  type = list(string)
 }

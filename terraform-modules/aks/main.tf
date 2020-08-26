@@ -1,7 +1,3 @@
-data "azuread_group" "aks" {
-  name = var.aad_group_name
-}
-
 resource "azurerm_kubernetes_cluster" "aks" {
   lifecycle {
     ignore_changes = [
@@ -41,9 +37,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
     azure_active_directory {
       managed = true
-      admin_group_object_ids = [
-        data.azuread_group.aks.id
-      ]
+      admin_group_object_ids = var.admin_group_object_ids
     }
   }
 

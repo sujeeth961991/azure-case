@@ -10,7 +10,7 @@ terraform {
 
     key = "terraform.state"
 
-    }
+  }
 }
 
 provider "azurerm" {
@@ -24,7 +24,7 @@ data "azurerm_resource_group" "delphi" {
 
 module "vnet" {
   source               = "../terraform-modules/virtual_network"
-  name                 = "delphi-vnet"
+  name                 = "delphivnet"
   location             = data.azurerm_resource_group.delphi.location
   resource_group_name  = data.azurerm_resource_group.delphi.name
   address_space        = ["10.0.0.0/16"]
@@ -37,7 +37,7 @@ module "vnet" {
 
 module "acr" {
   source              = "../terraform-modules/acr"
-  acr_name            = "delphi-acr"
+  acr_name            = "delphiacr"
   location            = data.azurerm_resource_group.delphi.location
   resource_group_name = data.azurerm_resource_group.delphi.name
   tags = {
@@ -47,7 +47,7 @@ module "acr" {
 
 module "aks" {
   source              = "../terraform-modules/aks"
-  name                = "delphi-aks"
+  name                = "delphiaks"
   vnet_subnet_id      = module.vnet.subnet_id
   resource_group_name = data.azurerm_resource_group.delphi.name
   location            = data.azurerm_resource_group.delphi.location
@@ -67,12 +67,13 @@ module "aks" {
     http_application_routing = true
     azure_policy             = false
   }
-  sla_sku                    = "Free"
-  aad_group_name             = "cluster-admin"
-  api_auth_ips               = []
-  container_registry_id      = module.acr.acr_id
+  sla_sku                = "Free"
+  admin_group_object_ids = ["94f93b23-5897-4f3a-9084-e2bd466371cb"]
+  api_auth_ips           = []
+  container_registry_id  = module.acr.acr_id
   tags = {
     name = "delphi-aks"
   }
+
 }
 
