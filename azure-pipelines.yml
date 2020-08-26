@@ -14,6 +14,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/delphi'
     backendServiceArm: 'Azure subscription 1(14ab4a7a-454d-4c1c-a9d3-eaf6bc4511d8)'
     backendAzureRmResourceGroupName: 'delphi'
     backendAzureRmStorageAccountName: 'delphitfstate'
