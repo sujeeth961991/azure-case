@@ -8,9 +8,10 @@ terraform {
 
     container_name = "tfstate"
 
-    key = "terraform.state"
+    key = "terraform.tfstate"
 
   }
+  required_version = ">=0.13.0"
 }
 
 provider "azurerm" {
@@ -52,11 +53,11 @@ module "aks" {
   resource_group_name = data.azurerm_resource_group.delphi.name
   location            = data.azurerm_resource_group.delphi.location
   private_cluster     = false
-  kubernetes_version  = "1.15"
+  kubernetes_version  = "1.16.13"
   default_node_pool = {
-    name       = "default-nodepool"
+    name       = "defaultpool"
     node_count = 1
-    vm_size    = "Standard_B1s"
+    vm_size    = "Standard_D2_v2"
     labels = {
       nodeType = "worker"
     }

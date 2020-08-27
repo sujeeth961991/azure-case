@@ -25,7 +25,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
     os_disk_size_gb       = 128
     vnet_subnet_id        = var.vnet_subnet_id
     node_labels           = var.default_node_pool.labels
-    enable_node_public_ip = true
   }
 
   identity {
@@ -61,9 +60,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     outbound_type      = "loadBalancer"
     network_plugin     = "azure"
     network_policy     = "calico"
-    dns_service_ip     = "10.0.0.10"
+    dns_service_ip     = "10.1.0.10"
     docker_bridge_cidr = "172.17.0.1/16"
-    service_cidr       = "10.0.0.0/16"
+    service_cidr       = "10.1.0.0/16"
   }
 
   tags = var.tags
