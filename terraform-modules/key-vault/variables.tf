@@ -109,15 +109,12 @@ locals {
 
   combined_access_policies = [
     for k, v in local.grouped_access_policies : {
-      object_id               = k
-      certificate_permissions = distinct(flatten(v[*].certificate_permissions))
-      key_permissions         = distinct(flatten(v[*].key_permissions))
-      secret_permissions      = distinct(flatten(v[*].secret_permissions))
-      storage_permissions     = distinct(flatten(v[*].storage_permissions))
+      object_id          = k
+      secret_permissions = distinct(flatten(v[*].secret_permissions))
     }
   ]
 
-  service_principal_object_id = data.azurerm_client_config.main.service_principal_object_id
+  service_principal_object_id = data.azurerm_client_config.main.object_id
 
   self_permissions = {
     object_id          = local.service_principal_object_id

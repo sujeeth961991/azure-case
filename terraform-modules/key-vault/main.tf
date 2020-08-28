@@ -33,10 +33,7 @@ resource "azurerm_key_vault" "main" {
       tenant_id = data.azurerm_client_config.main.tenant_id
       object_id = access_policy.value.object_id
 
-      certificate_permissions = access_policy.value.certificate_permissions
-      key_permissions         = access_policy.value.key_permissions
-      secret_permissions      = access_policy.value.secret_permissions
-      storage_permissions     = access_policy.value.storage_permissions
+      secret_permissions = access_policy.value.secret_permissions
     }
   }
 
@@ -47,10 +44,7 @@ resource "azurerm_key_vault" "main" {
       tenant_id = data.azurerm_client_config.main.tenant_id
       object_id = access_policy.value.object_id
 
-      certificate_permissions = access_policy.value.certificate_permissions
-      key_permissions         = access_policy.value.key_permissions
-      secret_permissions      = access_policy.value.secret_permissions
-      storage_permissions     = access_policy.value.storage_permissions
+      secret_permissions = access_policy.value.secret_permissions
     }
   }
 

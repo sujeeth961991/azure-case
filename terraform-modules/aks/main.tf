@@ -16,15 +16,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
   api_server_authorized_ip_ranges = var.api_auth_ips
 
   default_node_pool {
-    name                  = substr(var.default_node_pool.name, 0, 12)
-    orchestrator_version  = var.kubernetes_version
-    node_count            = var.default_node_pool.node_count
-    vm_size               = var.default_node_pool.vm_size
-    type                  = "VirtualMachineScaleSets"
-    max_pods              = 250
-    os_disk_size_gb       = 128
-    vnet_subnet_id        = var.vnet_subnet_id
-    node_labels           = var.default_node_pool.labels
+    name                 = substr(var.default_node_pool.name, 0, 12)
+    orchestrator_version = var.kubernetes_version
+    node_count           = var.default_node_pool.node_count
+    vm_size              = var.default_node_pool.vm_size
+    type                 = "VirtualMachineScaleSets"
+    max_pods             = 250
+    os_disk_size_gb      = 128
+    vnet_subnet_id       = var.vnet_subnet_id
+    node_labels          = var.default_node_pool.labels
   }
 
   identity {
@@ -35,14 +35,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
     enabled = true
 
     azure_active_directory {
-      managed = true
+      managed                = true
       admin_group_object_ids = var.admin_group_object_ids
     }
   }
 
   addon_profile {
     oms_agent {
-      enabled                    = false
+      enabled                    = var.addons.oms_agent
+      log_analytics_workspace_id = var.log_analytics_workspace_id
     }
     kube_dashboard {
       enabled = var.addons.kubernetes_dashboard

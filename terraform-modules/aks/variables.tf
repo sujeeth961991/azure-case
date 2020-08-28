@@ -70,5 +70,9 @@ variable "tags" {
 
 variable "admin_group_object_ids" {
   description = "AD Group Object ID for cluster admin"
-  type = list(string)
+  type        = list(string)
+}
+
+variable "log_analytics_workspace_id" {
+  description = ""
 }
