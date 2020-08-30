@@ -26,13 +26,19 @@ data "azurerm_resource_group" "delphi" {
 }
 
 module "vnet" {
-  source               = "../terraform-modules/virtual_network"
-  name                 = "delphivnet"
-  location             = data.azurerm_resource_group.delphi.location
-  resource_group_name  = data.azurerm_resource_group.delphi.name
-  address_space        = ["10.0.0.0/16"]
-  subnet_name          = "delphi-subnet-0"
-  subnet_address_space = "10.0.0.0/20"
+  source              = "../terraform-modules/virtual_network"
+  name                = "delphivnet"
+  location            = data.azurerm_resource_group.delphi.location
+  resource_group_name = data.azurerm_resource_group.delphi.name
+  address_space       = ["10.0.0.0/16"]
+  subnets = [{
+    name           = "delphi-subnet-0"
+    address_prefix = "10.0.0.0/20"
+    },
+    {
+      name           = "AzureBastionSubnet"
+      address_prefix = "10.0.16.0/24"
+  }]
   tags = {
     name = "delphi-vnet"
   }
@@ -61,9 +67,12 @@ module "log-analytics" {
 }
 
 module "key-vault" {
-  source              = "../terraform-modules/key-vault"
-  name                = "delphikv"
-  resource_group_name = data.azurerm_resource_group.delphi.name
+  source                          = "../terraform-modules/key-vault"
+  name                            = "delphikv"
+  resource_group_name             = data.azurerm_resource_group.delphi.name
+  enabled_for_deployment          = true
+  enabled_for_disk_encryption     = true
+  enabled_for_template_deployment = true
   access_policies = [
     {
       user_principal_names = ["sujeeth.kumar.psg_outlook.com#EXT#@sujeethkumarpsgoutlook978.onmicrosoft.com"]
@@ -71,7 +80,7 @@ module "key-vault" {
     },
     {
       group_names        = ["developers"]
-      secret_permissions = ["get", "list", "set"]
+      secret_permissions = ["get", "list", "set", "delete"]
     },
   ]
 
@@ -108,7 +117,7 @@ module "aks" {
   log_analytics_workspace_id = module.log-analytics.id
   sla_sku                    = "Free"
   admin_group_object_ids     = ["94f93b23-5897-4f3a-9084-e2bd466371cb"]
-  api_auth_ips               = []
+  api_auth_ips               = ["5.194.173.176/32"]
   container_registry_id      = module.acr.acr_id
   tags = {
     name = "delphi-aks"
@@ -122,6 +131,15 @@ module "elasticsearch" {
   rg_name            = data.azurerm_resource_group.delphi.name
   es_cluster         = "delphi-es"
   subnet_id          = module.vnet.subnet_id
-  data_instance_type = "Standard_B1s"
+  data_instance_type = "Standard_D2_v3"
+  fqdn               = "elasticsearch-delphi.westus.cloudapp.azure.coms"
 }
 
+module "diagnostic-logs" {
+  source                     = "../terraform-modules/diagnostic_logs"
+  target_resource_id         = module.aks.id
+  diagnostic_logs            = ["kube-apiserver", "kube-audit", "kube-audit-admin", "kube-controller-manager", "kube-scheduler", "cluster-autoscaler", "guard"]
+  log_analytics_workspace_id = module.log-analytics.id
+  name                       = "aks-diagnostic-logs"
+  retention                  = 7
+}

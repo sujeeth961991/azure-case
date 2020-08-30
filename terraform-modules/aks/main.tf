@@ -1,3 +1,19 @@
+resource "azuread_application" "aks" {
+  name                       = "${var.name}"
+  available_to_other_tenants = true
+  oauth2_allow_implicit_flow = true
+}
+
+resource "azuread_service_principal" "aks-sp" {
+  application_id = "${azuread_application.aks.application_id}"
+}
+
+resource "azuread_service_principal_password" "aks-sp-pass" {
+  service_principal_id = "${azuread_service_principal.aks-sp.id}"
+  value                = "${var.aks_client_secret}"
+  end_date             = "2999-01-01T01:02:03Z"
+}
+
 resource "azurerm_kubernetes_cluster" "aks" {
   lifecycle {
     ignore_changes = [
@@ -27,17 +43,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
     node_labels          = var.default_node_pool.labels
   }
 
-  identity {
-    type = "SystemAssigned"
+  service_principal {
+    client_id     = azuread_application.aks.application_id
+    client_secret = azuread_service_principal_password.aks-sp-pass.value
   }
 
   role_based_access_control {
     enabled = true
-
-    azure_active_directory {
-      managed                = true
-      admin_group_object_ids = var.admin_group_object_ids
-    }
   }
 
   addon_profile {
@@ -72,17 +84,17 @@ resource "azurerm_kubernetes_cluster" "aks" {
 resource "azurerm_role_assignment" "aks" {
   scope                = azurerm_kubernetes_cluster.aks.id
   role_definition_name = "Monitoring Metrics Publisher"
-  principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
+  principal_id         = azuread_service_principal.aks-sp.object_id
 }
 
 resource "azurerm_role_assignment" "aks_subnet" {
   scope                = var.vnet_subnet_id
   role_definition_name = "Network Contributor"
-  principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
+  principal_id         = azuread_service_principal.aks-sp.object_id
 }
 
 resource "azurerm_role_assignment" "aks_acr" {
   scope                = var.container_registry_id
   role_definition_name = "AcrPull"
-  principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
+  principal_id         = azuread_service_principal.aks-sp.object_id
 }

@@ -76,3 +76,7 @@ variable "admin_group_object_ids" {
 variable "log_analytics_workspace_id" {
   description = ""
 }
+
+variable "aks_client_secret" {
+  default = "password"
+}

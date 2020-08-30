@@ -73,3 +73,7 @@ variable "rg_name" {
 variable "subnet_id" {
   description = "Subnet ID for Elasticsearch"
 }
+
+variable "fqdn" {
+  description = "fqdn for kibana"
+}
